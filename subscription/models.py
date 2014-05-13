@@ -325,8 +325,8 @@ def handle_subscription_signup(sender, **kwargs):
     us = _ipn_usersubscription(sender)
     u, s = us.user, us.subscription
     if us:
-        # deactivate or delete all user's other subscriptions
-        for old_us in u.usersubscription_set.all():
+        # deactivate or delete user's other subscriptions for the same Subscription
+        for old_us in u.usersubscription_set.filter(subscription = s):
             if old_us==us: continue     # don't touch current subscription
             if old_us.cancelled:
                 old_us.delete()
@@ -393,8 +393,8 @@ def handle_subscription_modify(sender, **kwargs):
     u, s = us.user, us.subscription
     print 'modify', u, s
     if us:
-        # delete all user's other subscriptions
-        for old_us in u.usersubscription_set.all():
+        # delete user's otheh subscriptions for the same Subscription
+        for old_us in u.usersubscription_set.filter(subscription = s):
             if old_us==us: continue     # don't touch current subscription
             old_us.delete()
             Transaction(user=u, subscription=s, ipn=sender,
