@@ -98,7 +98,7 @@ def subscription_detail(request, object_id, payment_method="standard"):
 
     try:
         us = request.user.usersubscription_set.get(
-            active=True)
+            active=True, subscription = s)
     except UserSubscription.DoesNotExist:
         change_denied_reasons = None
         us = None
