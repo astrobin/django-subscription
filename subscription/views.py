@@ -117,7 +117,7 @@ def subscription_detail(request, object_id, payment_method="standard"):
         s_us = request.user.usersubscription_set.get(subscription=s)
     except UserSubscription.DoesNotExist:
         s_us = None
-        
+
     from subscription.providers import PaymentMethodFactory
     # See PROPOSALS section in providers.py
     if payment_method == "pro":
@@ -127,16 +127,16 @@ def subscription_detail(request, object_id, payment_method="standard"):
                 "custom": "tracking",       # custom tracking variable for you
                 "cancelurl": 'http://%s%s' % (domain, reverse('subscription_cancel')),  # Express checkout cancel url
                 "returnurl": 'http://%s%s' % (domain, reverse('subscription_done'))}  # Express checkout return url
-        
+
         data = {"item": item,
                 "payment_template": "payment.html",      # template name for payment
                 "confirm_template": "confirmation.html", # template name for confirmation
                 "success_url": reverse('subscription_done')}              # redirect location after success
-        
+
         o = PaymentMethodFactory.factory('WebsitePaymentsPro', data=data, request=request)
         # We return o.proceed() just because django-paypal's PayPalPro returns HttpResponse object
         return o.proceed()
-    
+
     elif payment_method == 'standard':
         return direct_to_template(request, template='subscription/subscription_detail.html',\
                                   extra_context=dict(object=s, usersubscription=s_us,\
