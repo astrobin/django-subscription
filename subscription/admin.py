@@ -14,7 +14,7 @@ def _trial(sub):
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('name', _pricing, _trial)
+    list_display = ('name', 'category', _pricing, _trial)
 admin.site.register(Subscription, SubscriptionAdmin)
 
 

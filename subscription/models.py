@@ -56,6 +56,11 @@ class Subscription(models.Model):
                                        + _TIME_UNIT_CHOICES)
     group = models.ForeignKey(auth.models.Group, null=False, blank=False, unique=False)
 
+    # A category allows subscription to be grouped. A website might offer
+    # several subcriptions per category. E.g. Service A (bronze, silver, gold)
+    # and Service B (tier 1, tier 2 and tier 3).
+    category = models.CharField(max_length=64, default="")
+
     _PLURAL_UNITS = {
         '0': ugettext_lazy('No trial'),
         'D': 'days',
@@ -360,7 +365,7 @@ def handle_subscription_signup(sender, **kwargs):
     u, s = us.user, us.subscription
     if us:
         # deactivate or delete all user's other subscriptions
-        for old_us in u.usersubscription_set.all():
+        for old_us in u.usersubscription_set.filter(subscription__category = s.category):
             if old_us == us:
                 continue     # don't touch current subscription
             if old_us.cancelled:
@@ -431,7 +436,7 @@ def handle_subscription_modify(sender, **kwargs):
     print 'modify', u, s
     if us:
         # delete all user's other subscriptions
-        for old_us in u.usersubscription_set.all():
+        for old_us in u.usersubscription_set.filter(subscription__category = s.category):
             if old_us == us:
                 continue     # don't touch current subscription
             old_us.delete()
