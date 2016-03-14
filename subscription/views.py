@@ -23,9 +23,9 @@ get_paypal_extra_args = Signal(providing_args=['user', 'subscription', 'extra_ar
 
 # http://paypaldeveloper.com/pdn/board/message?board.id=basicpayments&message.id=621
 if settings.PAYPAL_TEST:
-    cancel_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=%s' % urllib.quote(settings.PAYPAL_RECEIVER_EMAIL)
+    cancel_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=%s' % urllib.quote(settings.PAYPAL_MERCHANT_ID)
 else:
-    cancel_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=%s' % urllib.quote(settings.PAYPAL_RECEIVER_EMAIL)
+    cancel_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=%s' % urllib.quote(settings.PAYPAL_MERCHANT_ID)
 
 # Reference document for paypal html variables
 # https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_html_Appx_websitestandard_htmlvariables
