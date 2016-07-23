@@ -6,6 +6,7 @@ from django.contrib import auth
 from django.utils.translation import ugettext as _, ungettext, ugettext_lazy
 
 from paypal.standard import ipn
+from paypal.standard.ipn.models import PayPalIPN
 
 import signals
 import utils
