@@ -98,13 +98,13 @@ def _paypal_form(subscription, user, upgrade_subscription=False, **extra_args):
 
 
 def subscription_list(request):
-    return direct_to_template(
-        request, template='subscription/subscription_list.html',
-        extra_context=dict(object_list=Subscription.objects.all()))
+    return render(
+        request, 'subscription/subscription_list.html',
+        dict(object_list=Subscription.objects.all()))
+
 
 @login_required
 def subscription_detail(request, object_id, payment_method="standard"):
-
     FREE_SUBSCRIPTION_URL_NAME = getattr(settings, 'FREE_SUBSCRIPTION_URL_NAME', None)
     if FREE_SUBSCRIPTION_URL_NAME:
         return redirect(reverse(FREE_SUBSCRIPTION_URL_NAME))
