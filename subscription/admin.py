@@ -42,9 +42,11 @@ _ipn.allow_tags = True
 class UserSubscriptionAdminForm(forms.ModelForm):
     class Meta:
         model = UserSubscription
+        fields = (
+            'user', 'subscription', 'expires', 'active', 'cancelled'
+        )
     fix_group_membership = forms.fields.BooleanField(required=False)
     extend_subscription = forms.fields.BooleanField(required=False)
-
 
 class UserSubscriptionAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', _user, _subscription, 'active', 'expires', 'valid')
