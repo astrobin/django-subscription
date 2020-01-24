@@ -78,6 +78,7 @@ def _paypal_form(subscription, user, upgrade_subscription=False, **extra_args):
                 item_name='%s: %s' % (Site.objects.get_current().name, subscription.name),
                 item_number=subscription.id,
                 custom=user.id,
+                currency_code=subscription.currency,
                 a3=subscription.price,
                 p3=subscription.recurrence_period,
                 t3=subscription.recurrence_unit,
@@ -94,6 +95,7 @@ def _paypal_form(subscription, user, upgrade_subscription=False, **extra_args):
                 item_name='%s: %s' % (Site.objects.get_current().name, subscription.name),
                 item_number=subscription.id,
                 custom=user.id,
+                currency_code=subscription.currency,
                 amount=subscription.price))
 
 
