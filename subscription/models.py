@@ -49,6 +49,7 @@ class Subscription(models.Model):
     name = models.CharField(max_length=100, unique=True, null=False)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=64, decimal_places=2)
+    currency = models.CharField(max_length=3, default="USD")
     trial_period = models.PositiveIntegerField(null=True, blank=True)
     trial_unit = models.CharField(max_length=1, null=True, choices=_TIME_UNIT_CHOICES)
     recurrence_period = models.PositiveIntegerField(null=True, blank=True)
@@ -434,7 +435,6 @@ ipn.signals.subscription_eot.connect(handle_subscription_cancel)
 def handle_subscription_modify(sender, **kwargs):
     us = _ipn_usersubscription(sender)
     u, s = us.user, us.subscription
-    print 'modify', u, s
     if us:
         # delete all user's other subscriptions
         for old_us in u.usersubscription_set.filter(subscription__category = s.category):
