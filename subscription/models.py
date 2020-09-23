@@ -286,13 +286,17 @@ def _ipn_usersubscription(payment):
 
     try:
         s = Subscription.objects.get(id=payment.item_number)
-    except (Subscription.DoesNotExist, ValueError):
+    except Subscription.DoesNotExist:
         s = None
+    except ValueError:
+        return None
 
     try:
         u = auth.models.User.objects.get(id=payment.custom)
     except auth.models.User.DoesNotExist:
         u = None
+    except ValueError:
+        return None
 
     if u and s:
         try:
