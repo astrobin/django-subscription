@@ -286,7 +286,7 @@ def _ipn_usersubscription(payment):
 
     try:
         s = Subscription.objects.get(id=payment.item_number)
-    except Subscription.DoesNotExist:
+    except (Subscription.DoesNotExist, ValueError):
         s = None
 
     try:
