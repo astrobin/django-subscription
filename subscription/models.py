@@ -314,8 +314,11 @@ def _ipn_usersubscription(payment):
 
 def handle_payment_was_successful(sender, **kwargs):
     us = _ipn_usersubscription(sender)
-    u, s = us.user, us.subscription
+    u, s = None, None
+
     if us:
+        u, s = us.user, us.subscription
+
         if not s.recurrence_unit:
             if sender.mc_gross == s.price:
                 us.subscribe()
