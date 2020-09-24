@@ -361,11 +361,12 @@ ipn.signals.payment_was_successful.connect(handle_payment_was_successful)
 
 def handle_payment_was_flagged(sender, **kwargs):
     us = _ipn_usersubscription(sender)
-    u, s = us.user, us.subscription
-    Transaction(user=u, subscription=s, ipn=sender,
-                event='payment flagged', amount=sender.mc_gross
-                ).save()
-    signals.event.send(s, ipn=sender, subscription=s, user=u, event='flagged')
+    if us:
+        u, s = us.user, us.subscription
+        Transaction(user=u, subscription=s, ipn=sender,
+                    event='payment flagged', amount=sender.mc_gross
+                    ).save()
+        signals.event.send(s, ipn=sender, subscription=s, user=u, event='flagged')
 ipn.signals.payment_was_flagged.connect(handle_payment_was_flagged)
 
 
