@@ -45,7 +45,7 @@ def _paypal_form_args(upgrade_subscription=False, **kwargs):
 
     rv = settings.SUBSCRIPTION_PAYPAL_SETTINGS.copy()
     rv.update(notify_url=_url(reverse('paypal-ipn')),
-              return_url=_url(returl),
+              return_url=_url(returl) + "?item_number=%d" % kwargs.get('item_number', 0),
               cancel_return=_url(reverse("subscription_cancel")),
               **kwargs)
     return rv
