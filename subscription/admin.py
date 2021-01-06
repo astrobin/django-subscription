@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.utils.html import conditional_escape as esc
 
-from models import Subscription, UserSubscription, Transaction
+from subscription.models import Subscription, UserSubscription, Transaction
 
 
 def _pricing(sub):
