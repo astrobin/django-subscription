@@ -8,8 +8,8 @@ from django.utils.translation import ugettext as _, ungettext, ugettext_lazy
 from paypal.standard import ipn
 from paypal.standard.ipn.models import PayPalIPN
 
-import signals
-import utils
+from subscription import signals
+from subscription import utils
 
 
 class Transaction(models.Model):
