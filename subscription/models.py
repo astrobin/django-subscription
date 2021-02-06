@@ -322,7 +322,6 @@ def handle_payment_was_successful(sender, **kwargs):
         if not s.recurrence_unit:
             if sender.mc_gross == s.price:
                 us.subscribe()
-                us.expires = None
                 us.active = True
                 us.save()
                 Transaction(user=u, subscription=s, ipn=sender,
