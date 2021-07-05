@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.db import models
 from django.contrib import auth
+from django.urls import reverse
 from django.utils.translation import ugettext as _, ungettext, ugettext_lazy
 
 from paypal.standard import ipn
@@ -91,9 +92,8 @@ class Subscription(models.Model):
             self.recurrence_period * _recurrence_unit_days[self.recurrence_unit]
             )
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('subscription_detail', (), dict(object_id=str(self.id)))
+        return reverse('subscription_detail', kwargs={'object_id': str(self.id)})
 
     def get_pricing_display(self):
         if not self.price:
@@ -252,9 +252,8 @@ class UserSubscription(models.Model):
                 self, subscription=subscription)
             if res[1]]
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('subscription_usersubscription_detail', (), dict(object_id=str(self.id)))
+        return reverse('subscription_usersubscription_detail', kwargs={'object_id': str(self.id)})
 
     def __unicode__(self):
         rv = u"%s's %s" % (self.user, self.subscription)
