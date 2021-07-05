@@ -15,11 +15,11 @@ from subscription import utils
 class Transaction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, editable=False)
     subscription = models.ForeignKey('subscription.Subscription',
-                                     null=True, blank=True, editable=False)
+                                     null=True, blank=True, editable=False, on_delete=models.SET_NULL)
     user = models.ForeignKey(auth.models.User,
-                             null=True, blank=True, editable=False)
+                             null=True, blank=True, editable=False, on_delete=models.CASCADE)
     ipn = models.ForeignKey(ipn.models.PayPalIPN,
-                            null=True, blank=True, editable=False)
+                            null=True, blank=True, editable=False, on_delete=models.SET_NULL)
     event = models.CharField(max_length=100, editable=False)
     amount = models.DecimalField(max_digits=64, decimal_places=2,
                                  null=True, blank=True, editable=False)
@@ -56,7 +56,7 @@ class Subscription(models.Model):
     recurrence_unit = models.CharField(max_length=1, null=True,
                                        choices=((None, ugettext_lazy("No recurrence")),)
                                        + _TIME_UNIT_CHOICES)
-    group = models.ForeignKey(auth.models.Group, null=False, blank=False, unique=False)
+    group = models.ForeignKey(auth.models.Group, null=False, blank=False, unique=False, on_delete = models.SET_NULL)
 
     # A category allows subscription to be grouped. A website might offer
     # several subcriptions per category. E.g. Service A (bronze, silver, gold)
@@ -151,8 +151,8 @@ class ActiveUSManager(models.Manager):
 
 
 class UserSubscription(models.Model):
-    user = models.ForeignKey(auth.models.User)
-    subscription = models.ForeignKey(Subscription)
+    user = models.ForeignKey(auth.models.User, on_delete=models.CASCADE)
+    subscription = models.ForeignKey(Subscription, on_delete = models.CASCADE)
     expires = models.DateField(null=True, default=datetime.date.today)
     active = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=True)
