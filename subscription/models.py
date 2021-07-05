@@ -57,7 +57,7 @@ class Subscription(models.Model):
     recurrence_unit = models.CharField(max_length=1, null=True,
                                        choices=((None, ugettext_lazy("No recurrence")),)
                                        + _TIME_UNIT_CHOICES)
-    group = models.ForeignKey(auth.models.Group, null=False, blank=False, unique=False, on_delete = models.SET_NULL)
+    group = models.ForeignKey(auth.models.Group, null=False, blank=False, unique=False, on_delete=models.CASCADE)
 
     # A category allows subscription to be grouped. A website might offer
     # several subcriptions per category. E.g. Service A (bronze, silver, gold)
