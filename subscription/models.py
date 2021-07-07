@@ -75,7 +75,7 @@ class Subscription(models.Model):
     class Meta:
         ordering = ('price', '-recurrence_period')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def price_per_day(self):
@@ -255,7 +255,7 @@ class UserSubscription(models.Model):
     def get_absolute_url(self):
         return reverse('subscription_usersubscription_detail', kwargs={'object_id': str(self.id)})
 
-    def __unicode__(self):
+    def __str__(self):
         rv = u"%s's %s" % (self.user, self.subscription)
         if self.expired():
             rv += u' (expired)'
