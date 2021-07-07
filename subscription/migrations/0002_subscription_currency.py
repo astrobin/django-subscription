@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subscription',
             name='currency',
-            field=models.CharField(default=b'USD', max_length=3),
+            field=models.CharField(default='USD', max_length=3),
         ),
     ]
