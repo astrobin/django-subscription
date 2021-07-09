@@ -54,11 +54,12 @@ def extend_date_by(date, amount, unit):
         y += m / 12
         m %= 12
         if not m: m, y = 12, y-1
-        r = calendar.monthrange(y, m)[1]
+        r = calendar.monthrange(int(y), int(m))[1]
         if d > r:
             d = r
         return datetime.date(y, m, d)
     elif unit == 'Y':
         y, m, d = date.year, date.month, date.day
         return datetime.date(y+amount, m, d)
-    else: raise "Unknown unit."
+    else:
+        raise Exception('Unknown unit.')
