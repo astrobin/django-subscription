@@ -49,12 +49,12 @@ def extend_date_by(date, amount, unit):
     elif unit == 'W':
         return date + datetime.timedelta(7)*amount
     elif unit == 'M':
-        y, m, d = date.year, date.month, date.day
-        m += amount
-        y += m / 12
+        y, m, d = int(date.year), int(date.month), int(date.day)
+        m += int(amount)
+        y += int(m / 12)
         m %= 12
         if not m: m, y = 12, y-1
-        r = calendar.monthrange(int(y), int(m))[1]
+        r = calendar.monthrange(y, m)[1]
         if d > r:
             d = r
         return datetime.date(y, m, d)
