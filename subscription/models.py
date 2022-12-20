@@ -8,6 +8,7 @@ from django.utils.translation import ugettext as _, ungettext, ugettext_lazy
 
 from paypal.standard import ipn
 from paypal.standard.ipn.models import PayPalIPN
+from paypal.standard.models import ST_PP_COMPLETED, ST_PP_CREATED, ST_PP_CANCELLED
 
 from subscription import signals
 from subscription import utils
@@ -312,6 +313,9 @@ def _ipn_usersubscription(payment):
 
 
 def handle_payment_was_successful(sender, **kwargs):
+    if sender.payment_status != ST_PP_COMPLETED:
+        return
+
     us = _ipn_usersubscription(sender)
     u, s = None, None
 
@@ -354,21 +358,13 @@ def handle_payment_was_successful(sender, **kwargs):
                     event='unexpected payment', amount=sender.mc_gross
                     ).save()
         signals.event.send(s, ipn=sender, subscription=s, user=u, event='unexpected_payment')
-ipn.signals.payment_was_successful.connect(handle_payment_was_successful)
-
-
-def handle_payment_was_flagged(sender, **kwargs):
-    us = _ipn_usersubscription(sender)
-    if us:
-        u, s = us.user, us.subscription
-        Transaction(user=u, subscription=s, ipn=sender,
-                    event='payment flagged', amount=sender.mc_gross
-                    ).save()
-        signals.event.send(s, ipn=sender, subscription=s, user=u, event='flagged')
-ipn.signals.payment_was_flagged.connect(handle_payment_was_flagged)
+ipn.signals.valid_ipn_received.connect(handle_payment_was_successful)
 
 
 def handle_subscription_signup(sender, **kwargs):
+    if sender.payment_status != ST_PP_CREATED:
+        return
+
     us = _ipn_usersubscription(sender)
     u, s = us.user, us.subscription
     if us:
@@ -406,10 +402,13 @@ def handle_subscription_signup(sender, **kwargs):
                     ).save()
         signals.event.send(s, ipn=sender, subscription=s, user=u,
                            event='unexpected_subscription')
-ipn.signals.subscription_signup.connect(handle_subscription_signup)
+ipn.signals.valid_ipn_received.connect(handle_subscription_signup)
 
 
 def handle_subscription_cancel(sender, **kwargs):
+    if sender.payment_status != ST_PP_CANCELLED:
+        return
+
     us = _ipn_usersubscription(sender)
     u, s = us.user, us.subscription
     if us.pk is not None:
@@ -427,45 +426,25 @@ def handle_subscription_cancel(sender, **kwargs):
                         ).save()
         signals.unsubscribed.send(s, ipn=sender, subscription=s, user=u,
                                   usersubscription=us,
-#                                  refund=refund, reason='cancel')
                                   reason='cancel')
     else:
         Transaction(user=u, subscription=s, ipn=sender,
                     event='unexpected cancel', amount=sender.mc_gross
                     ).save()
         signals.event.send(s, ipn=sender, subscription=s, user=u, event='unexpected_cancel')
-ipn.signals.subscription_cancel.connect(handle_subscription_cancel)
-ipn.signals.subscription_eot.connect(handle_subscription_cancel)
+ipn.signals.valid_ipn_received.connect(handle_subscription_cancel)
+ipn.signals.valid_ipn_received.connect(handle_subscription_cancel)
 
 
-def handle_subscription_modify(sender, **kwargs):
+def handle_payment_was_flagged(sender, **kwargs):
     us = _ipn_usersubscription(sender)
-    u, s = us.user, us.subscription
     if us:
-        # delete all user's other subscriptions
-        for old_us in u.usersubscription_set.filter(subscription__category = s.category):
-            if old_us == us:
-                continue     # don't touch current subscription
-            old_us.delete()
-            Transaction(user=u, subscription=s, ipn=sender,
-                        event='remove subscription (deactivated)', amount=sender.mc_gross
-                        ).save()
+        u, s = us.user, us.subscription
+        Transaction(
+            user=u, subscription=s, ipn=sender,
+            event='payment flagged', amount=sender.mc_gross
+        ).save()
+        signals.event.send(s, ipn=sender, subscription=s, user=u, event='flagged')
 
-        # activate new subscription
-        us.subscribe()
-        us.active = True
-        us.cancelled = False
-        us.save()
-        Transaction(user=u, subscription=s, ipn=sender,
-                    event='activated', amount=sender.mc_gross
-                    ).save()
 
-        signals.subscribed.send(s, ipn=sender, subscription=s, user=u,
-                                usersubscription=us)
-    else:
-        Transaction(user=u, subscription=u, ipn=sender,
-                    event='unexpected subscription modify', amount=sender.mc_gross
-                    ).save()
-        signals.event.send(s, ipn=sender, subscription=s, user=u,
-                           event='unexpected_subscription_modify')
-ipn.signals.subscription_modify.connect(handle_subscription_modify)
+ipn.signals.invalid_ipn_received.connect(handle_payment_was_flagged)
