@@ -369,21 +369,16 @@ def handle_subscription_signup(sender, **kwargs):
     u, s = us.user, us.subscription
     if us:
         # deactivate or delete all user's other subscriptions
-        for old_us in u.usersubscription_set.filter(subscription__category = s.category):
+        for old_us in u.usersubscription_set.filter(subscription__category=s.category):
             if old_us == us:
                 continue     # don't touch current subscription
-            if old_us.cancelled:
-                old_us.delete()
-                Transaction(user=u, subscription=s, ipn=sender,
-                            event='remove subscription (deactivated)', amount=sender.mc_gross
-                            ).save()
-            else:
-                old_us.active = False
-                old_us.unsubscribe()
-                old_us.save()
-                Transaction(user=u, subscription=s, ipn=sender,
-                            event='deactivated', amount=sender.mc_gross
-                            ).save()
+            old_us.active = False
+            old_us.cancelled = True
+            old_us.unsubscribe()
+            old_us.save()
+            Transaction(user=u, subscription=s, ipn=sender,
+                        event='deactivated', amount=sender.mc_gross
+                        ).save()
 
         # activate new subscription
         us.subscribe()
