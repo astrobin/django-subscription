@@ -433,7 +433,6 @@ def handle_subscription_cancel(sender, **kwargs):
                     ).save()
         signals.event.send(s, ipn=sender, subscription=s, user=u, event='unexpected_cancel')
 ipn.signals.valid_ipn_received.connect(handle_subscription_cancel)
-ipn.signals.valid_ipn_received.connect(handle_subscription_cancel)
 
 
 def handle_payment_was_flagged(sender, **kwargs):
