@@ -157,6 +157,7 @@ class UserSubscription(models.Model):
     expires = models.DateField(null=True, default=datetime.date.today)
     active = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=True)
+    is_trial = models.BooleanField(default=False, db_index=True)
 
     objects = models.Manager()
     active_objects = ActiveUSManager()
