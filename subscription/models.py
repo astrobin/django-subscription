@@ -147,8 +147,14 @@ auth.models.User.add_to_class('get_subscription', __user_get_subscription)
 
 class ActiveUSManager(models.Manager):
     """Custom Manager for UserSubscription that returns only live US objects."""
-    def get_query_set(self):
-        return super(ActiveUSManager, self).get_query_set().filter(active=True)
+    def get_queryset(self):
+        return super(ActiveUSManager, self).get_queryset().filter(active=True)
+
+    # Backward-compatible alias for the pre-Django-1.6 method name. Django >= 1.8
+    # only calls get_queryset(), so the old get_query_set() override was dead and
+    # active_objects silently returned ALL rows. Keep the alias delegating so any
+    # remaining direct caller still gets the active-only queryset.
+    get_query_set = get_queryset
 
 
 class UserSubscription(models.Model):
